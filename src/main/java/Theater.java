@@ -1,6 +1,9 @@
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+
+import model.*;
 
 public class Theater {
     public static void main(String[] args) {
@@ -10,6 +13,12 @@ public class Theater {
         executorService.submit(new Signal(countDownLatch));
         executorService.submit(new Performance(countDownLatch));
         executorService.shutdown();
-
+        try {
+            if (!executorService.awaitTermination(10, TimeUnit.SECONDS)) {
+                executorService.shutdownNow();
+            }
+        } catch (InterruptedException e) {
+            executorService.shutdownNow();
+        }
     }
 }
